@@ -105,7 +105,7 @@ h2{color:var(--acc)}
 </div>
 
 <div id="app" class="hide">
-  <header><h1>Il mio Tennis</h1><div><span id="who" class="mut sm"></span> <button class="sm" id="btnOut">Esci</button></div></header>
+  <header><h1>Il mio Tennis</h1><div><span id="who" class="mut sm"></span> <span class="mut sm">v3</span> <button class="sm" id="btnOut">Esci</button></div></header>
   <nav id="nav"></nav>
   <main id="view"></main>
 </div>
@@ -157,7 +157,7 @@ onAuthStateChanged(auth,u=>{
   uid=u.uid;$("#who").textContent=u.email;$("#auth").classList.add("hide");$("#app").classList.remove("hide");
   render();
   for(const n of Object.keys(S)){
-    unsubs.push(onSnapshot(col(n),snap=>{S[n]=snap.docs.map(d=>({id:d.id,...d.data()}));render()},e=>{$("#view").insertAdjacentHTML("afterbegin",`<div class="card"><b class="L">Errore Firestore (${esc(n)}):</b> ${esc(e.code||e.message)}<br><span class="sm mut">Controlla in Console Firebase che il database Firestore sia creato e che le regole siano state pubblicate.</span></div>`)}));
+    unsubs.push(onSnapshot(col(n),snap=>{S[n]=snap.docs.map(d=>{const o={id:d.id,...d.data()};if(o.sets)o.sets=o.sets.map(s=>Array.isArray(s)?s:[s.a,s.b]);return o});render()},e=>{$("#view").insertAdjacentHTML("afterbegin",`<div class="card"><b class="L">Errore Firestore (${esc(n)}):</b> ${esc(e.code||e.message)}<br><span class="sm mut">Controlla in Console Firebase che il database Firestore sia creato e che le regole siano state pubblicate.</span></div>`)}));
   }
 });
 
@@ -262,6 +262,7 @@ function readMatch(){
 }
 async function saveMatch(id){
   const m=readMatch();if(!m.opponent||!m.sets.length)return alert("Inserisci avversario e almeno un set.");
+  m.sets=m.sets.map(([a,b])=>({a,b})); // Firestore non ammette array annidati
   if(id)await setDoc(doc(col("matches"),id),m);else await addDoc(col("matches"),m);
   close();
 }
@@ -376,7 +377,7 @@ function drawCharts(){
 /* ---------- Azioni ---------- */
 const guard=fn=>async()=>{
   const t=setTimeout(()=>alert("Il salvataggio non risponde: Firestore non è raggiungibile. Controlla che il database sia creato in Console Firebase (Firestore Database → Crea database) e che le regole siano pubblicate."),8000);
-  try{await fn()}catch(e){alert("Errore salvataggio: "+(e.code||e.message))}finally{clearTimeout(t)}
+  try{await fn()}catch(e){alert("Errore salvataggio: "+(e.code||"")+" "+(e.message||""))}finally{clearTimeout(t)}
 };
 const bindSave=fn=>{$("#save").onclick=guard(fn);$("#dlg").querySelectorAll("[data-act]").forEach(el=>el.onclick=()=>{const[a,id]=el.dataset.act.split(":");ACT[a]?.(id)})};
 const find=(arr,id)=>S[arr].find(x=>x.id===id);
