@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tennis">
+<meta name="theme-color" content="#2f7d4f">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%232f7d4f'/%3E%3Ccircle cx='90' cy='90' r='56' fill='%23d9e84a'/%3E%3Cpath d='M48 52q30 38 0 76M132 52q-30 38 0 76' stroke='%23fff' stroke-width='6' fill='none'/%3E%3C/svg%3E">
+<title>Il mio Tennis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f4f6f3;--card:#fff;--ink:#1c2a22;--mut:#6b7a70;--line:#dfe5e0;--acc:#2f7d4f;--acc2:#d6e9dc;--bad:#c0392b;--good:#2f7d4f;--warn:#d98a00}
+@media (prefers-color-scheme:dark){:root{--bg:#121714;--card:#1b231e;--ink:#e8efe9;--mut:#93a39a;--line:#2b362f;--acc:#4fb77a;--acc2:#23382b;--bad:#ef6b5c;--good:#4fb77a;--warn:#f0b13a}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+input,select,textarea{font-size:16px!important}
+header{padding-top:calc(12px + env(safe-area-inset-top))!important}
+nav{top:calc(51px + env(safe-area-inset-top))!important}
+main{padding-bottom:calc(32px + env(safe-area-inset-bottom))!important}
+button{min-height:36px}
+body{margin:0;-webkit-text-size-adjust:100%;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0}
+nav{display:flex;gap:4px;overflow-x:auto;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:51px;z-index:4}
+nav button{flex:0 0 auto}
+main{max-width:1000px;margin:0 auto;padding:16px}
+button,.btn{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer}
+button.primary{background:var(--acc);border-color:var(--acc);color:#fff}
+button.tab.on{background:var(--acc2);border-color:var(--acc);color:var(--ink);font-weight:600}
+button.danger{color:var(--bad)}
+button.sm{padding:3px 8px;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+.card h2,.card h3{margin:0 0 10px;font-size:16px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.kpi b{display:block;font-size:24px}.kpi span{color:var(--mut);font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.list-item{display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+.list-item:last-child{border:0}
+.mut{color:var(--mut)}.sm{font-size:13px}
+.W{color:var(--good);font-weight:700}.L{color:var(--bad);font-weight:700}
+.tag{display:inline-block;background:var(--acc2);border-radius:99px;padding:2px 9px;font-size:12px;margin:2px 3px 2px 0}
+.tag.bad{background:color-mix(in srgb,var(--bad) 18%,var(--card))}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
+.warn{color:var(--warn);font-weight:600}
+dialog{border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);width:min(560px,94vw);padding:16px;max-height:90vh}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+label{display:block;font-size:13px;color:var(--mut);margin:8px 0 3px}
+input,select,textarea{width:100%;font:inherit;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.f3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sets{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;align-items:center}
+.chips label{display:inline-flex;align-items:center;gap:4px;margin:3px 8px 3px 0;color:var(--ink);font-size:13px}
+.chips input{width:auto}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line);font-size:14px}th{color:var(--mut);font-weight:500}
+canvas{max-height:260px}
+#auth{max-width:340px;margin:60px auto}
+.hide{display:none!important}
+@media(max-width:520px){.f3{grid-template-columns:1fr 1fr}}
+
+/* ===== Tema tennis ===== */
+:root{--bg:#eef2e6;--acc:#1f6b3a;--acc2:#dcebd0;--ball:#d4e157;--clay:#c8643c;--line:#d8e0cc}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1a12;--card:#16251b;--acc:#58b97f;--acc2:#1f3a2a;--ball:#d4e157;--line:#2a3d30}}
+body{background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M0 60h120M60 0v120' stroke='%231f6b3a' stroke-opacity='.05' stroke-width='2'/%3E%3C/svg%3E")}
+header{background:linear-gradient(135deg,#14502b,#1f6b3a 60%,#2f8a4c)!important;border:0!important;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+header h1{font-size:19px;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+header h1::before{content:"";width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#eaf27a,var(--ball) 55%,#aab82f);box-shadow:inset 0 0 0 1px rgba(0,0,0,.15);
+  -webkit-mask:none}
+header .mut{color:#cfe6d6}
+header button{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)}
+nav{background:var(--acc)!important;border:0!important;padding:8px 10px!important}
+nav button.tab{background:transparent;border:0;color:#d5e9dc;border-radius:99px;padding:7px 14px}
+nav button.tab.on{background:var(--ball);color:#1b3a10;font-weight:700}
+button.primary{background:var(--acc);border-color:var(--acc);border-radius:99px;padding:8px 16px;font-weight:600}
+.card{border-radius:14px;box-shadow:0 1px 3px rgba(31,107,58,.08);border-top:3px solid var(--acc)}
+.kpi{border-radius:14px;border-left:5px solid var(--ball);box-shadow:0 1px 3px rgba(31,107,58,.08)}
+.kpi b{color:var(--acc)}
+.tag{background:var(--acc2)}
+.tag.bad{background:color-mix(in srgb,var(--clay) 20%,var(--card));color:var(--clay)}
+.L{color:var(--clay)!important}
+.bar i{background:linear-gradient(90deg,var(--acc),var(--ball))}
+h2{color:var(--acc)}
+.list-item b.W,.list-item b.L{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;font-size:12px;color:#fff;background:var(--good)}
+.list-item b.L{background:var(--clay)}
+#auth{background:linear-gradient(180deg,var(--card),var(--acc2));text-align:center;border-radius:18px}
+#auth h2{font-size:26px;margin-bottom:4px}
+#auth h2::after{content:"Diario di gioco";display:block;font-size:13px;font-weight:400;color:var(--mut);margin-top:2px}
+#auth label{text-align:left}
+</style>
+</head>
+<body>
+
+<div id="setup" class="hide" style="max-width:640px;margin:40px auto;padding:16px">
+  <div class="card"><h2>Configura Firebase</h2>
+  <p>Apri <code>index.html</code> e sostituisci l'oggetto <code>firebaseConfig</code> in cima allo script con quello del tuo progetto (Console Firebase → Impostazioni progetto → Le tue app → Web).</p></div>
+</div>
+
+<div id="auth" class="card hide">
+  <h2>🎾 Il mio Tennis</h2>
+  <label>Email</label><input id="em" type="email" autocomplete="username">
+  <label>Password</label><input id="pw" type="password" autocomplete="current-password">
+  <p id="autherr" class="L sm"></p>
+  <div class="row"><button class="primary" id="btnLogin">Accedi</button><button id="btnReg">Registrati</button></div>
+</div>
+
+<div id="app" class="hide">
+  <header><h1>Il mio Tennis</h1><div><span id="who" class="mut sm"></span> <button class="sm" id="btnOut">Esci</button></div></header>
+  <nav id="nav"></nav>
+  <main id="view"></main>
+</div>
+
+<dialog id="dlg"></dialog>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,createUserWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,collection,onSnapshot,addDoc,setDoc,doc,deleteDoc,query,orderBy} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ====== INCOLLA QUI LA TUA CONFIGURAZIONE FIREBASE ====== */
+const firebaseConfig = {
+  apiKey: "AIzaSyC9mmB0Q3qvJC1nm5OSAV9o2z_IA8Nv8aA",
+  authDomain: "tennislr.firebaseapp.com",
+  projectId: "tennislr",
+  storageBucket: "tennislr.firebasestorage.app",
+  messagingSenderId: "685063678860",
+  appId: "1:685063678860:web:1ece66b9d7c17c443e44a9"
+};
+/* ========================================================= */
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=d=>d?d.split("-").reverse().join("/"):"";
+const fmtH=m=>{m=Math.round(m||0);return `${Math.floor(m/60)}h ${String(m%60).padStart(2,"0")}m`};
+const pct=(a,b)=>b?Math.round(a/b*100)+"%":"–";
+const WEAK=["Servizio","Seconda di servizio","Risposta","Diritto","Rovescio","Volée / rete","Smash","Palla corta / smorzata","Movimento / gambe","Resistenza fisica","Tenuta mentale","Palle break"];
+const SURF=["Terra","Cemento","Erba","Sintetico","Indoor"];
+const KINDS=["Allenamento","Lezione","Palleggio","Fitness"];
+const TYPES=["Amichevole","Torneo","Campionato","Sfida"];
+
+if(firebaseConfig.apiKey.includes("IL_TUO")){$("#setup").classList.remove("hide");throw new Error("Firebase non configurato")}
+const fb=initializeApp(firebaseConfig),auth=getAuth(fb),db=getFirestore(fb);
+
+let uid=null,unsubs=[],tab="dashboard",detailOpp=null,charts=[];
+const S={matches:[],sessions:[],rackets:[],opponents:[]};
+const col=n=>collection(db,"users",uid,n);
+
+/* ---------- Auth ---------- */
+$("#btnLogin").onclick=()=>authGo(signInWithEmailAndPassword);
+$("#btnReg").onclick=()=>authGo(createUserWithEmailAndPassword);
+$("#btnOut").onclick=()=>signOut(auth);
+async function authGo(fn){try{$("#autherr").textContent="";await fn(auth,$("#em").value,$("#pw").value)}catch(e){$("#autherr").textContent=e.code||e.message}}
+onAuthStateChanged(auth,u=>{
+  unsubs.forEach(f=>f());unsubs=[];
+  if(!u){uid=null;$("#app").classList.add("hide");$("#auth").classList.remove("hide");return}
+  uid=u.uid;$("#who").textContent=u.email;$("#auth").classList.add("hide");$("#app").classList.remove("hide");
+  for(const n of Object.keys(S)){
+    unsubs.push(onSnapshot(col(n),snap=>{S[n]=snap.docs.map(d=>({id:d.id,...d.data()}));render()},e=>alert("Errore Firestore: "+e.message)));
+  }
+});
+
+/* ---------- Dati derivati ---------- */
+const setsWon=m=>{let a=0,b=0;(m.sets||[]).forEach(([x,y])=>{if(x>y)a++;else if(y>x)b++});return[a,b]};
+const isWin=m=>{const[a,b]=setsWon(m);return a>b};
+const gamesOf=m=>(m.sets||[]).reduce((t,[x,y])=>[t[0]+x,t[1]+y],[0,0]);
+const scoreStr=m=>(m.sets||[]).map(([x,y])=>`${x}-${y}`).join(" ");
+const rName=id=>S.rackets.find(r=>r.id===id)?.name||"–";
+const byDate=(a,b)=>b.date.localeCompare(a.date);
+function racketHours(r,sinceRestring){
+  const from=sinceRestring?(r.restrungAt||"0000"):"0000";
+  return [...S.matches,...S.sessions].filter(x=>x.racketId===r.id&&x.date>=from).reduce((t,x)=>t+(+x.minutes||0),0);
+}
+function agg(list){
+  const w=list.filter(isWin).length,g=list.reduce((t,m)=>{const[x,y]=gamesOf(m);return[t[0]+x,t[1]+y]},[0,0]);
+  const s=list.reduce((t,m)=>{const[x,y]=setsWon(m);return[t[0]+x,t[1]+y]},[0,0]);
+  return{n:list.length,w,l:list.length-w,g,s,min:list.reduce((t,m)=>t+(+m.minutes||0),0)};
+}
+function groupBy(arr,fn){const o={};arr.forEach(x=>{const k=fn(x);(o[k]=o[k]||[]).push(x)});return o}
+function weakFreq(list){const c={};list.forEach(m=>(m.weakTags||[]).forEach(t=>c[t]=(c[t]||0)+1));return Object.entries(c).sort((a,b)=>b[1]-a[1])}
+
+/* ---------- UI shell ---------- */
+const TABS=[["dashboard","Riepilogo"],["matches","Partite"],["sessions","Ore / Allenamenti"],["opponents","Avversari"],["rackets","Racchette"],["stats","Statistiche"]];
+function render(){
+  if(!uid)return;
+  $("#nav").innerHTML=TABS.map(([k,l])=>`<button class="tab ${tab===k?"on":""}" data-t="${k}">${l}</button>`).join("");
+  $("#nav").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;detailOpp=null;render()});
+  charts.forEach(c=>c.destroy());charts=[];
+  $("#view").innerHTML=({dashboard:vDash,matches:vMatches,sessions:vSessions,opponents:vOpps,rackets:vRackets,stats:vStats})[tab]();
+  bind();
+  if(tab==="dashboard"||tab==="stats")drawCharts();
+}
+function bind(){
+  document.querySelectorAll("[data-act]").forEach(el=>el.onclick=()=>{
+    const[a,id]=el.dataset.act.split(":");ACT[a]?.(id)
+  });
+}
+function dlg(html){const d=$("#dlg");d.innerHTML=html;d.showModal();return d}
+const close=()=>$("#dlg").close();
+window.closeDlg=close;
+function opts(arr,sel){return arr.map(x=>`<option ${x===sel?"selected":""}>${esc(x)}</option>`).join("")}
+function racketOpts(sel){return `<option value="">–</option>`+S.rackets.filter(r=>r.active!==false||r.id===sel).map(r=>`<option value="${r.id}" ${r.id===sel?"selected":""}>${esc(r.name)}</option>`).join("")}
+
+/* ---------- Dashboard ---------- */
+function vDash(){
+  const a=agg(S.matches),ses=S.sessions.reduce((t,s)=>t+(+s.minutes||0),0),tot=a.min+ses;
+  const last=[...S.matches].sort(byDate).slice(0,5);
+  const form=[...S.matches].sort(byDate).slice(0,10).map(m=>`<span class="${isWin(m)?"W":"L"}">${isWin(m)?"V":"S"}</span>`).join(" ");
+  const alerts=S.rackets.filter(r=>r.active!==false&&r.alertHours&&racketHours(r,true)/60>=r.alertHours);
+  return `
+  <div class="grid">
+    <div class="kpi"><b>${fmtH(tot)}</b><span>Ore totali giocate</span></div>
+    <div class="kpi"><b>${a.n}</b><span>Partite (${a.w}V – ${a.l}S)</span></div>
+    <div class="kpi"><b>${pct(a.w,a.n)}</b><span>% vittorie</span></div>
+    <div class="kpi"><b>${pct(a.g[0],a.g[0]+a.g[1])}</b><span>% game vinti</span></div>
+  </div><br>
+  ${alerts.length?`<div class="card"><h3 class="warn">⚠ Incordatura da fare</h3>${alerts.map(r=>`<div>${esc(r.name)}: ${(racketHours(r,true)/60).toFixed(1)}h dall'ultima incordatura (soglia ${r.alertHours}h)</div>`).join("")}</div>`:""}
+  <div class="card"><div class="row"><h3>Forma recente</h3><button class="primary sm" data-act="newMatch">+ Partita</button></div><div style="font-size:18px">${form||'<span class="mut">Nessuna partita</span>'}</div></div>
+  <div class="card"><h3>Ore per mese</h3><canvas id="chHours"></canvas></div>
+  <div class="card"><h3>Ultime partite</h3>${last.map(matchRow).join("")||'<span class="mut">–</span>'}</div>`;
+}
+
+/* ---------- Partite ---------- */
+function matchRow(m){
+  return `<div class="list-item"><div><b class="${isWin(m)?"W":"L"}">${isWin(m)?"V":"S"}</b> vs <b>${esc(m.opponent)}</b> <span class="mut">${scoreStr(m)}</span><br>
+  <span class="mut sm">${fmtD(m.date)} · ${esc(m.surface||"")} · ${esc(m.type||"")} · ${fmtH(m.minutes)} · ${esc(rName(m.racketId))}</span><br>
+  ${(m.weakTags||[]).map(t=>`<span class="tag bad">${esc(t)}</span>`).join("")}</div>
+  <div><button class="sm" data-act="editMatch:${m.id}">Modifica</button></div></div>`;
+}
+function vMatches(){
+  const l=[...S.matches].sort(byDate);
+  return `<div class="row" style="margin-bottom:12px"><h2 style="margin:0">Partite</h2><button class="primary" data-act="newMatch">+ Nuova partita</button></div>
+  <div class="card">${l.map(matchRow).join("")||'<span class="mut">Nessuna partita registrata.</span>'}</div>`;
+}
+function matchForm(m={}){
+  const sets=m.sets?.length?m.sets:[[0,0],[0,0],[0,0]];
+  const names=[...new Set([...S.opponents.map(o=>o.name),...S.matches.map(x=>x.opponent)])];
+  return `<h3>${m.id?"Modifica":"Nuova"} partita</h3>
+  <div class="f2"><div><label>Data</label><input id="f_date" type="date" value="${m.date||today()}"></div>
+  <div><label>Avversario</label><input id="f_opp" list="oppl" value="${esc(m.opponent||"")}"><datalist id="oppl">${names.map(n=>`<option value="${esc(n)}">`).join("")}</datalist></div></div>
+  <div class="f3"><div><label>Tipo</label><select id="f_type">${opts(TYPES,m.type)}</select></div>
+  <div><label>Superficie</label><select id="f_surf">${opts(SURF,m.surface)}</select></div>
+  <div><label>Durata (min)</label><input id="f_min" type="number" value="${m.minutes||90}"></div></div>
+  <label>Racchetta</label><select id="f_rk">${racketOpts(m.racketId)}</select>
+  <label>Punteggio set (io – avversario) — lascia 0-0 i set non giocati</label>
+  <div class="sets">${sets.concat(Array(Math.max(0,5-sets.length)).fill([0,0])).slice(0,5).map(([x,y],i)=>`<span class="mut">Set ${i+1}</span><input type="number" min="0" id="s${i}a" value="${x}"><input type="number" min="0" id="s${i}b" value="${y}">`).join("")}</div>
+  <label>Statistiche mie (opzionali)</label>
+  <div class="f3"><input id="f_ace" type="number" placeholder="Ace" value="${m.aces??""}"><input id="f_df" type="number" placeholder="Doppi falli" value="${m.df??""}"><input id="f_win" type="number" placeholder="Vincenti" value="${m.winners??""}">
+  <input id="f_ue" type="number" placeholder="Gratuiti" value="${m.ue??""}"><input id="f_fs" type="number" placeholder="% 1ª servizio" value="${m.firstServe??""}"><input id="f_bp" type="text" placeholder="Palle break (es. 3/7)" value="${esc(m.bp||"")}"></div>
+  <label>Punti deboli dell'avversario in questa partita</label>
+  <div class="chips">${WEAK.map(t=>`<label><input type="checkbox" class="wk" value="${t}" ${(m.weakTags||[]).includes(t)?"checked":""}>${t}</label>`).join("")}</div>
+  <label>Note tattiche / sull'avversario</label><textarea id="f_notes" rows="3">${esc(m.notes||"")}</textarea>
+  <div class="row" style="margin-top:12px"><div>${m.id?`<button class="danger" data-act="delMatch:${m.id}">Elimina</button>`:""}</div><div><button onclick="closeDlg()">Annulla</button> <button class="primary" id="save">Salva</button></div></div>`;
+}
+function readMatch(){
+  const sets=[];for(let i=0;i<5;i++){const a=+$(`#s${i}a`).value,b=+$(`#s${i}b`).value;if(a||b)sets.push([a,b])}
+  const n=id=>{const v=$(id).value;return v===""?null:+v};
+  return{date:$("#f_date").value,opponent:$("#f_opp").value.trim(),type:$("#f_type").value,surface:$("#f_surf").value,minutes:+$("#f_min").value||0,racketId:$("#f_rk").value,sets,
+    aces:n("#f_ace"),df:n("#f_df"),winners:n("#f_win"),ue:n("#f_ue"),firstServe:n("#f_fs"),bp:$("#f_bp").value.trim(),
+    weakTags:[...document.querySelectorAll(".wk:checked")].map(c=>c.value),notes:$("#f_notes").value};
+}
+async function saveMatch(id){
+  const m=readMatch();if(!m.opponent||!m.sets.length)return alert("Inserisci avversario e almeno un set.");
+  if(id)await setDoc(doc(col("matches"),id),m);else await addDoc(col("matches"),m);
+  close();
+}
+
+/* ---------- Ore / allenamenti ---------- */
+function vSessions(){
+  const l=[...S.sessions].sort(byDate),mins=S.sessions.reduce((t,s)=>t+(+s.minutes||0),0);
+  return `<div class="row" style="margin-bottom:12px"><h2 style="margin:0">Ore / Allenamenti <span class="mut sm">(${fmtH(mins)})</span></h2><button class="primary" data-act="newSession">+ Sessione</button></div>
+  <div class="card">${l.map(s=>`<div class="list-item"><div><b>${esc(s.kind)}</b> · ${fmtH(s.minutes)}<br><span class="mut sm">${fmtD(s.date)} · ${esc(rName(s.racketId))} ${s.notes?"· "+esc(s.notes):""}</span></div><button class="sm" data-act="editSession:${s.id}">Modifica</button></div>`).join("")||'<span class="mut">Nessuna sessione.</span>'}</div>`;
+}
+function sessionForm(s={}){
+  return `<h3>${s.id?"Modifica":"Nuova"} sessione</h3>
+  <div class="f2"><div><label>Data</label><input id="s_date" type="date" value="${s.date||today()}"></div><div><label>Tipo</label><select id="s_kind">${opts(KINDS,s.kind)}</select></div></div>
+  <div class="f2"><div><label>Durata (min)</label><input id="s_min" type="number" value="${s.minutes||60}"></div><div><label>Racchetta</label><select id="s_rk">${racketOpts(s.racketId)}</select></div></div>
+  <label>Note</label><textarea id="s_notes" rows="2">${esc(s.notes||"")}</textarea>
+  <div class="row" style="margin-top:12px"><div>${s.id?`<button class="danger" data-act="delSession:${s.id}">Elimina</button>`:""}</div><div><button onclick="closeDlg()">Annulla</button> <button class="primary" id="save">Salva</button></div></div>`;
+}
+async function saveSession(id){
+  const s={date:$("#s_date").value,kind:$("#s_kind").value,minutes:+$("#s_min").value||0,racketId:$("#s_rk").value,notes:$("#s_notes").value};
+  if(id)await setDoc(doc(col("sessions"),id),s);else await addDoc(col("sessions"),s);close();
+}
+
+/* ---------- Avversari ---------- */
+function vOpps(){
+  if(detailOpp)return vOppDetail(detailOpp);
+  const g=groupBy(S.matches,m=>m.opponent);
+  const rows=Object.entries(g).map(([name,l])=>({name,...agg(l),last:l.sort(byDate)[0].date,top:weakFreq(l)[0]}))
+    .sort((a,b)=>b.n-a.n||b.last.localeCompare(a.last));
+  return `<h2>Avversari</h2><div class="card">${rows.map(r=>`<div class="list-item" style="cursor:pointer" data-act="oppDetail:${encodeURIComponent(r.name)}"><div><b>${esc(r.name)}</b><br><span class="mut sm">${r.w}V – ${r.l}S · ultima ${fmtD(r.last)}</span> ${r.top?`<span class="tag bad">${esc(r.top[0])}</span>`:""}</div><div class="mut">›</div></div>`).join("")||'<span class="mut">Registra una partita per vedere gli avversari.</span>'}</div>`;
+}
+function vOppDetail(name){
+  const l=S.matches.filter(m=>m.opponent===name).sort(byDate),a=agg(l),wf=weakFreq(l),max=wf[0]?.[1]||1;
+  const prof=S.opponents.find(o=>o.name===name)||{};
+  const bySurf=Object.entries(groupBy(l,m=>m.surface||"–")).map(([s,x])=>{const q=agg(x);return`<tr><td>${esc(s)}</td><td>${q.w}-${q.l}</td></tr>`}).join("");
+  const sv=l.filter(m=>m.firstServe!=null);
+  return `<div class="row" style="margin-bottom:12px"><button data-act="back">‹ Avversari</button><button class="sm" data-act="editOpp:${encodeURIComponent(name)}">Profilo</button></div>
+  <h2 style="margin-top:0">${esc(name)} <span class="mut sm">${[prof.hand,prof.style].filter(Boolean).map(esc).join(" · ")}</span></h2>
+  <div class="grid"><div class="kpi"><b>${a.w}–${a.l}</b><span>Scontri diretti</span></div><div class="kpi"><b>${a.s[0]}–${a.s[1]}</b><span>Set</span></div><div class="kpi"><b>${a.g[0]}–${a.g[1]}</b><span>Game</span></div><div class="kpi"><b>${fmtH(a.min)}</b><span>Tempo in campo</span></div></div><br>
+  <div class="card"><h3>🎯 Punti deboli (frequenza nei match)</h3>
+  ${wf.map(([t,c])=>`<div style="margin:6px 0"><div class="row"><span>${esc(t)}</span><span class="mut sm">${c}/${l.length}</span></div><div class="bar"><i style="width:${c/max*100}%"></i></div></div>`).join("")||'<span class="mut">Nessun punto debole annotato.</span>'}
+  ${prof.notes?`<hr style="border:0;border-top:1px solid var(--line)"><b>Note profilo:</b><br>${esc(prof.notes).replace(/\n/g,"<br>")}`:""}</div>
+  <div class="card"><h3>Per superficie</h3><table>${bySurf}</table></div>
+  <div class="card"><h3>Storico & note tattiche</h3>${l.map(m=>matchRow(m)+(m.notes?`<div class="sm" style="padding:0 0 8px 20px">📝 ${esc(m.notes)}</div>`:"")).join("")}</div>`;
+}
+function oppForm(name){
+  const p=S.opponents.find(o=>o.name===name)||{name};
+  return `<h3>Profilo: ${esc(name)}</h3><div class="f2"><div><label>Mano</label><select id="o_hand">${opts(["","Destro","Mancino"],p.hand)}</select></div>
+  <div><label>Stile</label><select id="o_style">${opts(["","Fondocampista","Attaccante","Completo","Picchiatore","Regolarista"],p.style)}</select></div></div>
+  <label>Note generali (tattica consigliata, abitudini…)</label><textarea id="o_notes" rows="5">${esc(p.notes||"")}</textarea>
+  <div class="row" style="margin-top:12px"><span></span><div><button onclick="closeDlg()">Annulla</button> <button class="primary" id="save">Salva</button></div></div>`;
+}
+
+/* ---------- Racchette ---------- */
+function vRackets(){
+  return `<div class="row" style="margin-bottom:12px"><h2 style="margin:0">Racchette & attrezzatura</h2><button class="primary" data-act="newRacket">+ Racchetta</button></div>
+  ${S.rackets.map(r=>{
+    const tot=racketHours(r),since=racketHours(r,true),al=r.alertHours?since/60/r.alertHours:0;
+    const mm=[...S.matches].filter(m=>m.racketId===r.id),a=agg(mm);
+    return `<div class="card"><div class="row"><h3>${esc(r.name)} ${r.active===false?'<span class="tag">archiviata</span>':""}</h3><div><button class="sm" data-act="restring:${r.id}">Incordata</button> <button class="sm" data-act="editRacket:${r.id}">Modifica</button></div></div>
+    <div class="mut sm">${[r.brand,r.weight&&r.weight+" g",r.headSize&&r.headSize+" in²",r.grip&&"grip "+r.grip].filter(Boolean).map(esc).join(" · ")}</div>
+    <div style="margin:8px 0">Corde: <b>${esc(r.strings||"–")}</b> ${r.tension?`@ ${esc(r.tension)} kg`:""} · incordata il ${fmtD(r.restrungAt)||"–"}</div>
+    <div class="row sm"><span>Ore totali: <b>${fmtH(tot)}</b></span><span>Dall'incordatura: <b class="${al>=1?"warn":""}">${fmtH(since)}</b>${r.alertHours?` / ${r.alertHours}h`:""}</span><span>Partite: ${a.n} (${pct(a.w,a.n)} vitt.)</span></div>
+    ${r.alertHours?`<div class="bar" style="margin-top:6px"><i style="width:${Math.min(100,al*100)}%;background:${al>=1?"var(--warn)":"var(--acc)"}"></i></div>`:""}
+    ${(r.restrings||[]).length?`<details style="margin-top:8px"><summary class="sm mut">Storico incordature (${r.restrings.length})</summary>${[...r.restrings].reverse().map(x=>`<div class="sm">${fmtD(x.date)} · ${esc(x.strings||"")} ${esc(x.tension||"")} kg · ${(x.hours||0).toFixed(1)}h di durata</div>`).join("")}</details>`:""}
+    </div>`}).join("")||'<div class="card mut">Aggiungi la tua prima racchetta.</div>'}`;
+}
+function racketForm(r={}){
+  return `<h3>${r.id?"Modifica":"Nuova"} racchetta</h3>
+  <div class="f2"><div><label>Nome / modello</label><input id="r_name" value="${esc(r.name||"")}"></div><div><label>Marca</label><input id="r_brand" value="${esc(r.brand||"")}"></div></div>
+  <div class="f3"><div><label>Peso (g)</label><input id="r_w" type="number" value="${r.weight||""}"></div><div><label>Piatto (in²)</label><input id="r_h" type="number" value="${r.headSize||""}"></div><div><label>Grip</label><input id="r_g" value="${esc(r.grip||"")}"></div></div>
+  <div class="f3"><div><label>Corde</label><input id="r_s" value="${esc(r.strings||"")}"></div><div><label>Tensione (kg)</label><input id="r_t" value="${esc(r.tension||"")}"></div><div><label>Incordata il</label><input id="r_d" type="date" value="${r.restrungAt||""}"></div></div>
+  <div class="f2"><div><label>Avviso incordatura dopo (ore di gioco)</label><input id="r_a" type="number" value="${r.alertHours||20}"></div><div><label>Stato</label><select id="r_act"><option value="1" ${r.active!==false?"selected":""}>In uso</option><option value="0" ${r.active===false?"selected":""}>Archiviata</option></select></div></div>
+  <div class="row" style="margin-top:12px"><div>${r.id?`<button class="danger" data-act="delRacket:${r.id}">Elimina</button>`:""}</div><div><button onclick="closeDlg()">Annulla</button> <button class="primary" id="save">Salva</button></div></div>`;
+}
+async function saveRacket(id){
+  const old=S.rackets.find(r=>r.id===id)||{};
+  const r={...old,name:$("#r_name").value.trim(),brand:$("#r_brand").value,weight:+$("#r_w").value||null,headSize:+$("#r_h").value||null,grip:$("#r_g").value,strings:$("#r_s").value,tension:$("#r_t").value,restrungAt:$("#r_d").value,alertHours:+$("#r_a").value||null,active:$("#r_act").value==="1"};delete r.id;
+  if(!r.name)return alert("Inserisci un nome.");
+  if(id)await setDoc(doc(col("rackets"),id),r);else await addDoc(col("rackets"),r);close();
+}
+
+/* ---------- Statistiche ---------- */
+function vStats(){
+  const a=agg(S.matches);
+  const aces=S.matches.filter(m=>m.aces!=null),dfs=S.matches.filter(m=>m.df!=null),w=S.matches.filter(m=>m.winners!=null&&m.ue!=null);
+  const avg=(l,k)=>l.length?(l.reduce((t,m)=>t+m[k],0)/l.length).toFixed(1):"–";
+  const tbl=(title,g)=>`<div class="card"><h3>${title}</h3><table><tr><th></th><th>Partite</th><th>V–S</th><th>% vitt.</th><th>% game</th></tr>${Object.entries(g).map(([k,l])=>{const q=agg(l);return`<tr><td>${esc(k)}</td><td>${q.n}</td><td>${q.w}–${q.l}</td><td>${pct(q.w,q.n)}</td><td>${pct(q.g[0],q.g[0]+q.g[1])}</td></tr>`}).join("")}</table></div>`;
+  const wf=weakFreq(S.matches.filter(m=>!isWin(m)));
+  return `<h2>Statistiche</h2>
+  <div class="grid"><div class="kpi"><b>${avg(aces,"aces")}</b><span>Ace / partita</span></div><div class="kpi"><b>${avg(dfs,"df")}</b><span>Doppi falli / partita</span></div><div class="kpi"><b>${avg(w,"winners")} / ${avg(w,"ue")}</b><span>Vincenti / gratuiti</span></div><div class="kpi"><b>${a.s[0]}–${a.s[1]}</b><span>Set vinti–persi</span></div></div><br>
+  <div class="card"><h3>Ore per mese</h3><canvas id="chHours"></canvas></div>
+  <div class="card"><h3>Andamento % vittorie (media mobile su 5 partite)</h3><canvas id="chTrend"></canvas></div>
+  ${tbl("Per superficie",groupBy(S.matches,m=>m.surface||"–"))}
+  ${tbl("Per tipo di partita",groupBy(S.matches,m=>m.type||"–"))}
+  ${tbl("Per racchetta",groupBy(S.matches,m=>rName(m.racketId)))}
+  <div class="card"><h3>Dove sbagli nelle sconfitte (punti deboli avversari ricorrenti)</h3>${wf.map(([t,c])=>`<span class="tag bad">${esc(t)} ×${c}</span>`).join("")||'<span class="mut">–</span>'}</div>`;
+}
+
+/* ---------- Grafici ---------- */
+function drawCharts(){
+  const css=getComputedStyle(document.documentElement),acc=css.getPropertyValue("--acc").trim(),mut=css.getPropertyValue("--mut").trim();
+  const mon={};[...S.matches,...S.sessions].forEach(x=>{const k=x.date.slice(0,7);mon[k]=(mon[k]||0)+(+x.minutes||0)});
+  const ks=Object.keys(mon).sort().slice(-12);
+  const opt={plugins:{legend:{display:false}},scales:{x:{ticks:{color:mut}},y:{ticks:{color:mut},beginAtZero:true}}};
+  if($("#chHours"))charts.push(new Chart($("#chHours"),{type:"bar",data:{labels:ks,datasets:[{data:ks.map(k=>+(mon[k]/60).toFixed(1)),backgroundColor:acc}]},options:{...opt,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+" h"}}}}}));
+  if($("#chTrend")){
+    const l=[...S.matches].sort((a,b)=>a.date.localeCompare(b.date)),pts=l.map((_,i)=>{const w=l.slice(Math.max(0,i-4),i+1);return Math.round(w.filter(isWin).length/w.length*100)});
+    charts.push(new Chart($("#chTrend"),{type:"line",data:{labels:l.map(m=>fmtD(m.date)),datasets:[{data:pts,borderColor:acc,tension:.3}]},options:{...opt,scales:{x:{ticks:{color:mut}},y:{min:0,max:100,ticks:{color:mut}}}}}));
+  }
+}
+
+/* ---------- Azioni ---------- */
+const bindSave=fn=>{$("#save").onclick=fn;$("#dlg").querySelectorAll("[data-act]").forEach(el=>el.onclick=()=>{const[a,id]=el.dataset.act.split(":");ACT[a]?.(id)})};
+const find=(arr,id)=>S[arr].find(x=>x.id===id);
+const ACT={
+  back(){detailOpp=null;render()},
+  oppDetail(n){detailOpp=decodeURIComponent(n);render();scrollTo(0,0)},
+  newMatch(){dlg(matchForm());bindSave(()=>saveMatch())},
+  editMatch(id){dlg(matchForm(find("matches",id)));bindSave(()=>saveMatch(id))},
+  async delMatch(id){if(confirm("Eliminare la partita?")){await deleteDoc(doc(col("matches"),id));close()}},
+  newSession(){dlg(sessionForm());bindSave(()=>saveSession())},
+  editSession(id){dlg(sessionForm(find("sessions",id)));bindSave(()=>saveSession(id))},
+  async delSession(id){if(confirm("Eliminare la sessione?")){await deleteDoc(doc(col("sessions"),id));close()}},
+  newRacket(){dlg(racketForm());bindSave(()=>saveRacket())},
+  editRacket(id){dlg(racketForm(find("rackets",id)));bindSave(()=>saveRacket(id))},
+  async delRacket(id){if(confirm("Eliminare la racchetta? Le partite collegate restano.")){await deleteDoc(doc(col("rackets"),id));close()}},
+  restring(id){
+    const r=find("rackets",id);
+    dlg(`<h3>Nuova incordatura: ${esc(r.name)}</h3><div class="f3"><div><label>Data</label><input id="x_d" type="date" value="${today()}"></div><div><label>Corde</label><input id="x_s" value="${esc(r.strings||"")}"></div><div><label>Tensione kg</label><input id="x_t" value="${esc(r.tension||"")}"></div></div>
+    <div class="row" style="margin-top:12px"><span></span><div><button onclick="closeDlg()">Annulla</button> <button class="primary" id="save">Salva</button></div></div>`);
+    $("#save").onclick=async()=>{
+      const n={...r},hist=[...(r.restrings||[])];
+      hist.push({date:r.restrungAt||"",strings:r.strings||"",tension:r.tension||"",hours:racketHours(r,true)/60});
+      Object.assign(n,{restrungAt:$("#x_d").value,strings:$("#x_s").value,tension:$("#x_t").value,restrings:hist});delete n.id;
+      await setDoc(doc(col("rackets"),id),n);close();
+    };
+  },
+  editOpp(n){const name=decodeURIComponent(n);dlg(oppForm(name));$("#save").onclick=async()=>{
+    const p=S.opponents.find(o=>o.name===name);
+    const data={name,hand:$("#o_hand").value,style:$("#o_style").value,notes:$("#o_notes").value};
+    if(p)await setDoc(doc(col("opponents"),p.id),data);else await addDoc(col("opponents"),data);close();
+  }}
+};
+</script>
+</body>
+</html>
