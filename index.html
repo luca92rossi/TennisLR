@@ -155,8 +155,9 @@ onAuthStateChanged(auth,u=>{
   unsubs.forEach(f=>f());unsubs=[];
   if(!u){uid=null;$("#app").classList.add("hide");$("#auth").classList.remove("hide");return}
   uid=u.uid;$("#who").textContent=u.email;$("#auth").classList.add("hide");$("#app").classList.remove("hide");
+  render();
   for(const n of Object.keys(S)){
-    unsubs.push(onSnapshot(col(n),snap=>{S[n]=snap.docs.map(d=>({id:d.id,...d.data()}));render()},e=>alert("Errore Firestore: "+e.message)));
+    unsubs.push(onSnapshot(col(n),snap=>{S[n]=snap.docs.map(d=>({id:d.id,...d.data()}));render()},e=>{$("#view").insertAdjacentHTML("afterbegin",`<div class="card"><b class="L">Errore Firestore (${esc(n)}):</b> ${esc(e.code||e.message)}<br><span class="sm mut">Controlla in Console Firebase che il database Firestore sia creato e che le regole siano state pubblicate.</span></div>`)}));
   }
 });
 
