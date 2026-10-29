@@ -374,7 +374,11 @@ function drawCharts(){
 }
 
 /* ---------- Azioni ---------- */
-const bindSave=fn=>{$("#save").onclick=fn;$("#dlg").querySelectorAll("[data-act]").forEach(el=>el.onclick=()=>{const[a,id]=el.dataset.act.split(":");ACT[a]?.(id)})};
+const guard=fn=>async()=>{
+  const t=setTimeout(()=>alert("Il salvataggio non risponde: Firestore non è raggiungibile. Controlla che il database sia creato in Console Firebase (Firestore Database → Crea database) e che le regole siano pubblicate."),8000);
+  try{await fn()}catch(e){alert("Errore salvataggio: "+(e.code||e.message))}finally{clearTimeout(t)}
+};
+const bindSave=fn=>{$("#save").onclick=guard(fn);$("#dlg").querySelectorAll("[data-act]").forEach(el=>el.onclick=()=>{const[a,id]=el.dataset.act.split(":");ACT[a]?.(id)})};
 const find=(arr,id)=>S[arr].find(x=>x.id===id);
 const ACT={
   back(){detailOpp=null;render()},
@@ -392,18 +396,18 @@ const ACT={
     const r=find("rackets",id);
     dlg(`<h3>Nuova incordatura: ${esc(r.name)}</h3><div class="f3"><div><label>Data</label><input id="x_d" type="date" value="${today()}"></div><div><label>Corde</label><input id="x_s" value="${esc(r.strings||"")}"></div><div><label>Tensione kg</label><input id="x_t" value="${esc(r.tension||"")}"></div></div>
     <div class="row" style="margin-top:12px"><span></span><div><button onclick="closeDlg()">Annulla</button> <button class="primary" id="save">Salva</button></div></div>`);
-    $("#save").onclick=async()=>{
+    $("#save").onclick=guard(async()=>{
       const n={...r},hist=[...(r.restrings||[])];
       hist.push({date:r.restrungAt||"",strings:r.strings||"",tension:r.tension||"",hours:racketHours(r,true)/60});
       Object.assign(n,{restrungAt:$("#x_d").value,strings:$("#x_s").value,tension:$("#x_t").value,restrings:hist});delete n.id;
       await setDoc(doc(col("rackets"),id),n);close();
-    };
+    });
   },
-  editOpp(n){const name=decodeURIComponent(n);dlg(oppForm(name));$("#save").onclick=async()=>{
+  editOpp(n){const name=decodeURIComponent(n);dlg(oppForm(name));$("#save").onclick=guard(async()=>{
     const p=S.opponents.find(o=>o.name===name);
     const data={name,hand:$("#o_hand").value,style:$("#o_style").value,notes:$("#o_notes").value};
     if(p)await setDoc(doc(col("opponents"),p.id),data);else await addDoc(col("opponents"),data);close();
-  }}
+  })}
 };
 </script>
 </body>
